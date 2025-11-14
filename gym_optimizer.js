@@ -1,8 +1,8 @@
 // JavaScript implementation of the recommendation system
 class GymOptimizer {
     constructor() {
-        this.crowdPatterns = data.crowdPatterns;
-        this.demographics=data.crowdPatterns
+        this.crowdPatterns = GymRecommendationSystem.crowdPatterns;
+        this.demographics=GymRecommendationSystem.crowdPatterns
         };
     }
 
