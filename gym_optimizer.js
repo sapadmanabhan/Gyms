@@ -3,29 +3,22 @@ class GymOptimizer {
     constructor() {
         // All data built in - no external files needed
         this.crowdPatterns = {
-            'Monday': {'06:00': 0.2, '09:00': 0.4, '12:00': 0.9, '15:00': 0.6, '18:00': 0.95, '21:00': 0.7},
-            'Tuesday': {'06:00': 0.3, '09:00': 0.5, '12:00': 0.8, '15:00': 0.7, '18:00': 0.95, '21:00': 0.6},
-            'Wednesday': {'06:00': 0.2, '09:00': 0.4, '12:00': 0.9, '15:00': 0.6, '18:00': 0.95, '21:00': 0.7},
-            'Thursday': {'06:00': 0.3, '09:00': 0.5, '12:00': 0.8, '15:00': 0.7, '18:00': 0.95, '21:00': 0.6},
-            'Friday': {'06:00': 0.2, '09:00': 0.3, '12:00': 0.7, '15:00': 0.5, '18:00': 0.9, '21:00': 0.8},
-            'Saturday': {'09:00': 0.4, '12:00': 0.7, '15:00': 0.8, '18:00': 0.9, '21:00': 0.6},
-            'Sunday': {'09:00': 0.3, '12:00': 0.5, '15:00': 0.7, '18:00': 0.8, '21:00': 0.4}
+            'Monday': {'06:00': 0.1, '07:00': 0.2, '08:00': 0.3, '09:00': 0.4, '10:00': 0.5, '11:00': 0.6, '12:00': 0.9, '13:00': 0.8, '14:00': 0.7, '15:00': 0.6, '16:00': 0.7, '17:00': 0.8, '18:00': 0.95, '19:00': 0.9, '20:00': 0.7, '21:00': 0.5, '22:00': 0.3},
+            'Tuesday': {'06:00': 0.2, '07:00': 0.3, '08:00': 0.4, '09:00': 0.5, '10:00': 0.6, '11:00': 0.7, '12:00': 0.8, '13:00': 0.7, '14:00': 0.6, '15:00': 0.7, '16:00': 0.8, '17:00': 0.9, '18:00': 0.95, '19:00': 0.85, '20:00': 0.6, '21:00': 0.4, '22:00': 0.2},
+            'Wednesday': {'06:00': 0.1, '07:00': 0.2, '08:00': 0.3, '09:00': 0.4, '10:00': 0.5, '11:00': 0.6, '12:00': 0.9, '13:00': 0.8, '14:00': 0.7, '15:00': 0.6, '16:00': 0.7, '17:00': 0.8, '18:00': 0.95, '19:00': 0.9, '20:00': 0.7, '21:00': 0.5, '22:00': 0.3},
+            'Thursday': {'06:00': 0.2, '07:00': 0.3, '08:00': 0.4, '09:00': 0.5, '10:00': 0.6, '11:00': 0.7, '12:00': 0.8, '13:00': 0.7, '14:00': 0.6, '15:00': 0.7, '16:00': 0.8, '17:00': 0.9, '18:00': 0.95, '19:00': 0.85, '20:00': 0.6, '21:00': 0.4, '22:00': 0.2},
+            'Friday': {'06:00': 0.1, '07:00': 0.2, '08:00': 0.3, '09:00': 0.3, '10:00': 0.4, '11:00': 0.5, '12:00': 0.7, '13:00': 0.6, '14:00': 0.5, '15:00': 0.5, '16:00': 0.6, '17:00': 0.7, '18:00': 0.9, '19:00': 0.8, '20:00': 0.7, '21:00': 0.6, '22:00': 0.4},
+            'Saturday': {'09:00': 0.4, '10:00': 0.5, '11:00': 0.6, '12:00': 0.7, '13:00': 0.8, '14:00': 0.8, '15:00': 0.8, '16:00': 0.8, '17:00': 0.8, '18:00': 0.9, '19:00': 0.8, '20:00': 0.7, '21:00': 0.6, '22:00': 0.4},
+            'Sunday': {'09:00': 0.3, '10:00': 0.4, '11:00': 0.5, '12:00': 0.5, '13:00': 0.6, '14:00': 0.6, '15:00': 0.7, '16:00': 0.7, '17:00': 0.7, '18:00': 0.8, '19:00': 0.7, '20:00': 0.6, '21:00': 0.4, '22:00': 0.3}
         };
         
         this.demographics = {
-            'early_morning': {'male': 0.7, 'female': 0.3, 'asian': 0.4, 'caucasian': 0.4, 'other': 0.2},
-            'mid_morning': {'male': 0.6, 'female': 0.4, 'asian': 0.35, 'caucasian': 0.45, 'other': 0.2},
-            'midday': {'male': 0.6, 'female': 0.4, 'asian': 0.35, 'caucasian': 0.45, 'other': 0.2},
-            'afternoon': {'male': 0.6, 'female': 0.4, 'asian': 0.35, 'caucasian': 0.45, 'other': 0.2},
-            'evening_peak': {'male': 0.65, 'female': 0.35, 'asian': 0.4, 'caucasian': 0.4, 'other': 0.2},
-            'late_evening': {'male': 0.7, 'female': 0.3, 'asian': 0.45, 'caucasian': 0.35, 'other': 0.2}
-        };
-        
-        this.equipmentAvailability = {
-            'weight_room': {'hours': 'extended', 'peak_wait': 15},
-            'cardio': {'hours': 'extended', 'peak_wait': 10},
-            'basketball': {'schedule': 'variable', 'conflict_risk': 0.3},
-            'squash': {'hours': 'limited', 'conflict_risk': 0.4}
+            'early_morning': {'male': 0.75, 'female': 0.25, 'asian': 0.45, 'caucasian': 0.40, 'other': 0.15},
+            'mid_morning': {'male': 0.65, 'female': 0.35, 'asian': 0.40, 'caucasian': 0.45, 'other': 0.15},
+            'midday': {'male': 0.60, 'female': 0.40, 'asian': 0.35, 'caucasian': 0.50, 'other': 0.15},
+            'afternoon': {'male': 0.55, 'female': 0.45, 'asian': 0.40, 'caucasian': 0.45, 'other': 0.15},
+            'evening_peak': {'male': 0.70, 'female': 0.30, 'asian': 0.45, 'caucasian': 0.40, 'other': 0.15},
+            'late_evening': {'male': 0.75, 'female': 0.25, 'asian': 0.50, 'caucasian': 0.35, 'other': 0.15}
         };
     }
 
@@ -47,33 +40,41 @@ class GymOptimizer {
         let score = 100;
         const crowdLevel = this.getCrowdLevel(timeSlot.day, timeSlot.hour);
         
-        // Crowd factor (40% of score)
-        const crowdPreference = userPrefs.crowd_tolerance || 0.5;
-        const crowdScore = (1 - Math.abs(crowdLevel - crowdPreference)) * 40;
-        score = score * (crowdScore / 40);
+        // Crowd factor - match user preference (50% weight)
+        const crowdPreference = (userPrefs.crowd_tolerance || 30) / 100;
+        const crowdDifference = Math.abs(crowdLevel - crowdPreference);
+        const crowdScore = (1 - crowdDifference) * 50;
+        score *= (crowdScore / 50);
         
-        // Time preference (30% of score)
-        const preferredTimes = userPrefs.preferred_times || [];
-        if (preferredTimes.includes(timeSlot.hour)) {
-            score += 30;
+        // Gender preference (20% weight)
+        const genderPref = userPrefs.gender_preference || 'both';
+        const timeCategory = this.getTimeSlotCategory(timeSlot.hour);
+        const maleRatio = this.demographics[timeCategory].male;
+        const femaleRatio = this.demographics[timeCategory].female;
+        
+        let genderScore = 20;
+        if (genderPref === 'male') {
+            genderScore = maleRatio * 20;
+        } else if (genderPref === 'female') {
+            genderScore = femaleRatio * 20;
+        }
+        score *= (genderScore / 20);
+        
+        // Ethnicity preference (20% weight)
+        const ethnicityPref = userPrefs.ethnicity_preference || 'none';
+        if (ethnicityPref !== 'none') {
+            const ethnicityRatio = this.demographics[timeCategory][ethnicityPref];
+            const ethnicityScore = ethnicityRatio * 20;
+            score *= (ethnicityScore / 20);
         }
         
-        // Equipment bonus (20% of score)
+        // Equipment bonus (10% weight)
         const equipmentPrefs = userPrefs.equipment_priority || [];
         if (equipmentPrefs.length > 0) {
-            score += 20;
+            score += 10;
         }
         
-        // Demographic adjustment (10% of score)
-        const timeCategory = this.getTimeSlotCategory(timeSlot.hour);
-        const demoPrefs = userPrefs.demographic_preferences || {};
-        if (demoPrefs.female) {
-            const actualFemale = this.demographics[timeCategory].female;
-            const demoScore = (1 - Math.abs(actualFemale - demoPrefs.female)) * 10;
-            score = score * (demoScore / 10);
-        }
-        
-        return Math.round(score);
+        return Math.round(Math.max(0, Math.min(100, score)));
     }
 
     generateRecommendations(userPrefs) {
@@ -92,12 +93,14 @@ class GymOptimizer {
                 
                 const score = this.calculateScore(timeSlot, userPrefs);
                 const crowdLevel = this.getCrowdLevel(day, hour);
+                const crowdPercent = Math.round(crowdLevel * 100);
                 
                 recommendations.push({
                     day: day,
                     time: timeSlot.time,
                     score: score,
                     crowd_level: crowdLevel,
+                    crowd_percent: crowdPercent,
                     time_category: this.getTimeSlotCategory(hour)
                 });
             }
@@ -108,65 +111,53 @@ class GymOptimizer {
 }
 
 function calculateRecommendations() {
+    console.log("Button clicked!"); // Debug line
+    
     // Get user preferences from the form
     const userPrefs = {
-        crowd_tolerance: parseFloat(document.getElementById('crowdTolerance').value),
+        crowd_tolerance: parseInt(document.getElementById('crowdTolerance').value),
+        gender_preference: document.querySelector('input[name="gender"]:checked').value,
+        ethnicity_preference: document.querySelector('input[name="ethnicity"]:checked').value,
         equipment_priority: Array.from(document.querySelectorAll('input[name="equipment"]:checked'))
-                               .map(cb => cb.value),
-        preferred_times: Array.from(document.querySelectorAll('input[name="time"]:checked'))
-                            .map(cb => parseInt(cb.value)),
-        demographic_preferences: {
-            female: parseFloat(document.getElementById('femaleRatio').value) || 0.4
-        }
+                               .map(cb => cb.value)
     };
+
+    console.log("User prefs:", userPrefs); // Debug line
 
     const optimizer = new GymOptimizer();
     const results = optimizer.generateRecommendations(userPrefs);
     
+    console.log("Results:", results); // Debug line
     displayResults(results);
 }
 
 function displayResults(recommendations) {
     const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = '<h2>Top 10 Recommended Gym Times:</h2>';
     
     if (recommendations.length === 0) {
-        resultsDiv.innerHTML += '<p>No recommendations found. Please adjust your preferences.</p>';
+        resultsDiv.innerHTML = '<div class="result-item">No recommendations found. Please adjust your preferences.</div>';
         return;
     }
     
+    let html = '<h2>🎯 Top 10 Recommended Gym Times:</h2>';
+    
     recommendations.forEach((rec, index) => {
-        const crowdPercent = Math.round(rec.crowd_level * 100);
-        const crowdText = crowdPercent < 40 ? 'Quiet' : 
-                         crowdPercent < 70 ? 'Moderate' : 'Busy';
+        const crowdText = rec.crowd_percent < 30 ? 'Very Empty' : 
+                         rec.crowd_percent < 50 ? 'Moderately Empty' :
+                         rec.crowd_percent < 70 ? 'Moderately Crowded' :
+                         rec.crowd_percent < 85 ? 'Very Crowded' : 'Extremely Crowded';
         
-        resultsDiv.innerHTML += `
-            <div class="result-item" style="padding: 10px; margin: 5px 0; background: #f5f5f5; border-radius: 3px;">
+        html += `
+            <div class="result-item">
                 <strong>${index + 1}. ${rec.day} at ${rec.time}</strong><br>
-                Score: ${rec.score}/100 | Crowd: ${crowdText} (${crowdPercent}%)<br>
-                Best for: ${rec.time_category.replace('_', ' ')}
+                ⭐ Score: ${rec.score}/100 | 🚶 Crowd: ${crowdText} (${rec.crowd_percent}%)<br>
+                🕒 Best Time For: ${rec.time_category.replace('_', ' ').toUpperCase()}
             </div>
         `;
     });
+    
+    resultsDiv.innerHTML = html;
 }
 
-// Initialize slider display
-document.addEventListener('DOMContentLoaded', function() {
-    const crowdSlider = document.getElementById('crowdTolerance');
-    const crowdValue = document.getElementById('crowdValue');
-    const femaleSlider = document.getElementById('femaleRatio');
-    const femaleValue = document.getElementById('femaleValue');
-    
-    if (crowdSlider && crowdValue) {
-        crowdSlider.addEventListener('input', function() {
-            crowdValue.textContent = Math.round(this.value * 100) + '%';
-        });
-    }
-    
-    if (femaleSlider && femaleValue) {
-        femaleSlider.addEventListener('input', function() {
-            femaleValue.textContent = Math.round(this.value * 100) + '%';
-        });
-    }
-});
-}
+// Make function globally available
+window.calculateRecommendations = calculateRecommendations;
