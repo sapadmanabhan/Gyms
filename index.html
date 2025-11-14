@@ -68,6 +68,9 @@
         button:hover { 
             background: #219a52; 
         }
+        button:active {
+            transform: scale(0.98);
+        }
         .result-item {
             padding: 15px;
             margin: 10px 0;
@@ -79,23 +82,34 @@
             width: 100%;
             margin: 10px 0;
         }
+        .debug {
+            color: #666;
+            font-size: 12px;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .stats {
+            font-size: 14px;
+            color: #555;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🏋️ RIMAC Gym Timing Optimizer</h1>
+        <h1>RIMAC Gym Timing Optimizer</h1>
         
         <div class="preference-section">
-            <h3>🚶 Crowd Preference</h3>
+            <h3>Crowd Preference</h3>
             <p>How crowded do you prefer the gym?</p>
             <div class="slider-container">
-                <input type="range" id="crowdTolerance" min="0" max="100" value="30">
-                <span class="slider-value" id="crowdValue">30% (Moderately Empty)</span>
+                <input type="range" id="crowdTolerance" min="0" max="100" value="10">
+                <span class="slider-value" id="crowdValue">10% (Very Empty)</span>
             </div>
         </div>
 
         <div class="preference-section">
-            <h3>👥 Gender Preference</h3>
+            <h3>Gender Preference</h3>
             <p>Which gender ratio do you prefer?</p>
             <div class="checkbox-group">
                 <label><input type="radio" name="gender" value="male" checked> Mostly Male</label>
@@ -105,18 +119,17 @@
         </div>
 
         <div class="preference-section">
-            <h3>🌍 Ethnicity Preference</h3>
-            <p>Which ethnicity ratio do you prefer?</p>
+            <h3>Ethnicity Preference</h3>
+            <p>Select preferred ethnicities (choose multiple or none):</p>
             <div class="checkbox-group">
-                <label><input type="radio" name="ethnicity" value="asian" checked> Mostly Asian</label>
-                <label><input type="radio" name="ethnicity" value="caucasian"> Mostly Caucasian</label>
-                <label><input type="radio" name="ethnicity" value="other"> Mostly Other</label>
-                <label><input type="radio" name="ethnicity" value="none"> No Preference</label>
+                <label><input type="checkbox" name="ethnicity" value="asian"> Asian</label>
+                <label><input type="checkbox" name="ethnicity" value="caucasian"> Caucasian</label>
+                <label><input type="checkbox" name="ethnicity" value="other"> Other</label>
             </div>
         </div>
 
         <div class="preference-section">
-            <h3>💪 Equipment Priority</h3>
+            <h3>Equipment Priority</h3>
             <p>What equipment will you use?</p>
             <div class="checkbox-group">
                 <label><input type="checkbox" name="equipment" value="weight_room" checked> Weight Room</label>
@@ -126,49 +139,265 @@
             </div>
         </div>
 
-        <button onclick="calculateRecommendations()">Find Best Gym Times 🏃‍♂️</button>
+        <button id="recommendButton">Find Best Gym Times</button>
 
         <div id="results" class="results"></div>
+        <div id="debug" class="debug"></div>
     </div>
 
-    <script src="gym_optimizer.js"></script>
-    
     <script>
-        // Update slider with meaningful text
-        document.getElementById('crowdTolerance').addEventListener('input', function() {
-            const value = parseInt(this.value);
-            let text = '';
-            if (value <= 20) text = 'Very Empty';
-            else if (value <= 40) text = 'Moderately Empty';
-            else if (value <= 60) text = 'Moderately Crowded';
-            else if (value <= 80) text = 'Very Crowded';
-            else text = 'Extremely Crowded';
+        const gymData = {
+            crowdPatterns: {
+                'Monday': {
+                    6: 0.1,  7: 0.2,  8: 0.3,  9: 0.4,  10: 0.5,  11: 0.6, 
+                    12: 0.9, 13: 0.8, 14: 0.7, 15: 0.6, 16: 0.7, 17: 0.8, 
+                    18: 0.95, 19: 0.9, 20: 0.7, 21: 0.5, 22: 0.3
+                },
+                'Tuesday': {
+                    6: 0.2,  7: 0.3,  8: 0.4,  9: 0.5,  10: 0.6,  11: 0.7, 
+                    12: 0.8, 13: 0.7, 14: 0.6, 15: 0.7, 16: 0.8, 17: 0.9, 
+                    18: 0.95, 19: 0.85, 20: 0.6, 21: 0.4, 22: 0.2
+                },
+                'Wednesday': {
+                    6: 0.1,  7: 0.2,  8: 0.3,  9: 0.4,  10: 0.5,  11: 0.6, 
+                    12: 0.9, 13: 0.8, 14: 0.7, 15: 0.6, 16: 0.7, 17: 0.8, 
+                    18: 0.95, 19: 0.9, 20: 0.7, 21: 0.5, 22: 0.3
+                },
+                'Thursday': {
+                    6: 0.2,  7: 0.3,  8: 0.4,  9: 0.5,  10: 0.6,  11: 0.7, 
+                    12: 0.8, 13: 0.7, 14: 0.6, 15: 0.7, 16: 0.8, 17: 0.9, 
+                    18: 0.95, 19: 0.85, 20: 0.6, 21: 0.4, 22: 0.2
+                },
+                'Friday': {
+                    6: 0.1,  7: 0.2,  8: 0.3,  9: 0.3,  10: 0.4,  11: 0.5, 
+                    12: 0.7, 13: 0.6, 14: 0.5, 15: 0.5, 16: 0.6, 17: 0.7, 
+                    18: 0.9, 19: 0.8, 20: 0.7, 21: 0.6, 22: 0.4
+                },
+                'Saturday': {
+                    9: 0.4, 10: 0.5, 11: 0.6, 12: 0.7, 13: 0.8, 14: 0.8, 
+                    15: 0.8, 16: 0.8, 17: 0.8, 18: 0.9, 19: 0.8, 20: 0.7, 
+                    21: 0.6, 22: 0.4
+                },
+                'Sunday': {
+                    9: 0.3, 10: 0.4, 11: 0.5, 12: 0.5, 13: 0.6, 14: 0.6, 
+                    15: 0.7, 16: 0.7, 17: 0.7, 18: 0.8, 19: 0.7, 20: 0.6, 
+                    21: 0.4, 22: 0.3
+                }
+            },
+            demographics: {
+                'early_morning': {'male': 0.75, 'female': 0.25, 'asian': 0.45, 'caucasian': 0.40, 'other': 0.15},
+                'mid_morning': {'male': 0.65, 'female': 0.35, 'asian': 0.40, 'caucasian': 0.45, 'other': 0.15},
+                'midday': {'male': 0.60, 'female': 0.40, 'asian': 0.35, 'caucasian': 0.50, 'other': 0.15},
+                'afternoon': {'male': 0.55, 'female': 0.45, 'asian': 0.40, 'caucasian': 0.45, 'other': 0.15},
+                'evening_peak': {'male': 0.70, 'female': 0.30, 'asian': 0.45, 'caucasian': 0.40, 'other': 0.15},
+                'late_evening': {'male': 0.75, 'female': 0.25, 'asian': 0.50, 'caucasian': 0.35, 'other': 0.15}
+            }
+        };
+
+        function convertTo12Hour(hour24) {
+            const period = hour24 >= 12 ? 'PM' : 'AM';
+            const hour12 = hour24 % 12 || 12;
+            return `${hour12}${period}`;
+        }
+
+        function getTimeSlotCategory(hour) {
+            if (hour < 9) return 'early_morning';
+            if (hour < 12) return 'mid_morning';
+            if (hour < 15) return 'midday';
+            if (hour < 17) return 'afternoon';
+            if (hour < 20) return 'evening_peak';
+            return 'late_evening';
+        }
+
+        function getCrowdLevel(day, hour) {
+            return gymData.crowdPatterns[day][hour] || 0.5;
+        }
+
+        function calculateScore(timeSlot, userPrefs) {
+            let score = 100;
+            const crowdLevel = getCrowdLevel(timeSlot.day, timeSlot.hour);
+            const crowdPercent = Math.round(crowdLevel * 100);
             
-            document.getElementById('crowdValue').textContent = `${value}% (${text})`;
+            // Crowd factor (60% weight) - STRICT MATCHING
+            const crowdPreference = (userPrefs.crowd_tolerance || 10) / 100;
+            const crowdDifference = Math.abs(crowdLevel - crowdPreference);
+            
+            // Penalize heavily for mismatches - very strict for low crowd preferences
+            let crowdScore;
+            if (userPrefs.crowd_tolerance <= 20) {
+                // Very strict for "Very Empty" preferences
+                crowdScore = (1 - (crowdDifference * 3)) * 60;
+            } else if (userPrefs.crowd_tolerance <= 40) {
+                // Strict for "Moderately Empty" preferences
+                crowdScore = (1 - (crowdDifference * 2)) * 60;
+            } else {
+                // Normal matching for other preferences
+                crowdScore = (1 - crowdDifference) * 60;
+            }
+            
+            score = score * (Math.max(0, crowdScore) / 60);
+            
+            // Gender preference (20% weight)
+            const genderPref = userPrefs.gender_preference || 'both';
+            const timeCategory = getTimeSlotCategory(timeSlot.hour);
+            const maleRatio = gymData.demographics[timeCategory].male;
+            const femaleRatio = gymData.demographics[timeCategory].female;
+            
+            let genderScore = 20;
+            if (genderPref === 'male') {
+                genderScore = maleRatio * 20;
+            } else if (genderPref === 'female') {
+                genderScore = femaleRatio * 20;
+            }
+            score = score * (genderScore / 20);
+            
+            // Ethnicity preference (20% weight)
+            const ethnicityPrefs = userPrefs.ethnicity_preferences || [];
+            if (ethnicityPrefs.length > 0) {
+                let ethnicityScore = 0;
+                ethnicityPrefs.forEach(ethnicity => {
+                    ethnicityScore += gymData.demographics[timeCategory][ethnicity] || 0;
+                });
+                ethnicityScore = (ethnicityScore / ethnicityPrefs.length) * 20;
+                score = score * (ethnicityScore / 20);
+            }
+            
+            return Math.round(Math.max(0, Math.min(100, score)));
+        }
+
+        function generateRecommendations(userPrefs) {
+            const recommendations = [];
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            
+            days.forEach(day => {
+                const startHour = (day === 'Saturday' || day === 'Sunday') ? 9 : 6;
+                
+                for (let hour = startHour; hour <= 22; hour++) {
+                    const time12 = convertTo12Hour(hour);
+                    const timeSlot = { day: day, hour: hour, time: time12 };
+                    const score = calculateScore(timeSlot, userPrefs);
+                    const crowdLevel = getCrowdLevel(day, hour);
+                    const timeCategory = getTimeSlotCategory(hour);
+                    
+                    if (score > 0) {
+                        recommendations.push({
+                            day: day,
+                            time: time12,
+                            score: score,
+                            crowd_percent: Math.round(crowdLevel * 100),
+                            time_category: timeCategory,
+                            demographics: gymData.demographics[timeCategory]
+                        });
+                    }
+                }
+            });
+            
+            return recommendations.sort((a, b) => b.score - a.score).slice(0, 10);
+        }
+
+        function displayResults(recommendations) {
+            const resultsDiv = document.getElementById('results');
+            
+            if (!recommendations || recommendations.length === 0) {
+                resultsDiv.innerHTML = '<div class="result-item">No recommendations found. Try increasing your crowd tolerance.</div>';
+                return;
+            }
+            
+            let html = '<h2>Top 10 Recommended Gym Times:</h2>';
+            
+            recommendations.forEach((rec, index) => {
+                const crowdText = rec.crowd_percent < 20 ? 'Very Empty' : 
+                                 rec.crowd_percent < 40 ? 'Moderately Empty' :
+                                 rec.crowd_percent < 60 ? 'Moderately Crowded' :
+                                 rec.crowd_percent < 80 ? 'Very Crowded' : 'Extremely Crowded';
+                
+                let genderStats = '';
+                let ethnicityStats = '';
+                
+                // Get user preferences to show relevant stats
+                const genderPref = document.querySelector('input[name="gender"]:checked').value;
+                const ethnicityPrefs = Array.from(document.querySelectorAll('input[name="ethnicity"]:checked'))
+                                          .map(cb => cb.value);
+                
+                if (genderPref !== 'both') {
+                    const percentage = Math.round(rec.demographics[genderPref] * 100);
+                    genderStats = `${percentage}% ${genderPref}`;
+                }
+                
+                if (ethnicityPrefs.length > 0) {
+                    ethnicityStats = ethnicityPrefs.map(ethnicity => {
+                        const percentage = Math.round(rec.demographics[ethnicity] * 100);
+                        return `${percentage}% ${ethnicity}`;
+                    }).join(', ');
+                }
+                
+                html += `
+                    <div class="result-item">
+                        <strong>${index + 1}. ${rec.day} at ${rec.time}</strong><br>
+                        Crowd: ${crowdText} (${rec.crowd_percent}%)
+                        <div class="stats">
+                            ${genderStats ? 'Gender: ' + genderStats + '<br>' : ''}
+                            ${ethnicityStats ? 'Ethnicity: ' + ethnicityStats : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+
+        function calculateRecommendations() {
+            console.log("Button clicked!");
+            
+            try {
+                const userPrefs = {
+                    crowd_tolerance: parseInt(document.getElementById('crowdTolerance').value),
+                    gender_preference: document.querySelector('input[name="gender"]:checked').value,
+                    ethnicity_preferences: Array.from(document.querySelectorAll('input[name="ethnicity"]:checked'))
+                                              .map(cb => cb.value),
+                    equipment_priority: Array.from(document.querySelectorAll('input[name="equipment"]:checked'))
+                                           .map(cb => cb.value)
+                };
+
+                console.log("User wants crowd level:", userPrefs.crowd_tolerance + "%");
+                const results = generateRecommendations(userPrefs);
+                displayResults(results);
+                document.getElementById('debug').textContent = `Found ${results.length} recommendations matching your preferences`;
+                
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById('debug').textContent = "Error: " + error.message;
+            }
+        }
+
+        // SETUP - RUNS WHEN PAGE LOADS
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Page loaded successfully!");
+            
+            // Setup slider with better labels
+            document.getElementById('crowdTolerance').addEventListener('input', function() {
+                const value = parseInt(this.value);
+                let text = '';
+                if (value <= 20) text = 'Very Empty';
+                else if (value <= 40) text = 'Moderately Empty';
+                else if (value <= 60) text = 'Moderately Crowded';
+                else if (value <= 80) text = 'Very Crowded';
+                else text = 'Extremely Crowded';
+                
+                document.getElementById('crowdValue').textContent = `${value}% (${text})`;
+            });
+
+            // Setup button
+            const button = document.getElementById('recommendButton');
+            button.addEventListener('click', calculateRecommendations);
+            
+            // Initialize with very empty default
+            document.getElementById('crowdTolerance').value = 10;
+            document.getElementById('crowdTolerance').dispatchEvent(new Event('input'));
+            document.getElementById('debug').textContent = "Ready! Click the button to get recommendations.";
+            
+            console.log("Setup complete - button should work now!");
         });
-
-        // Initialize display
-        document.getElementById('crowdTolerance').dispatchEvent(new Event('input'));
-
-        <script>
-// Debug script
-document.addEventListener('DOMContentLoaded', function() {
-    console.log("Page loaded successfully!");
-    
-    // Test if button exists
-    const button = document.querySelector('button');
-    console.log("Button found:", button);
-    
-    // Test if function exists
-    console.log("calculateRecommendations function:", typeof calculateRecommendations);
-    
-    // Add click listener manually as backup
-    button.addEventListener('click', function() {
-        console.log("Button clicked via event listener!");
-        calculateRecommendations();
-    });
-});
-</script>
     </script>
 </body>
 </html>
