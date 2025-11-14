@@ -5,60 +5,150 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RIMAC Gym Timing Optimizer</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-        .preference-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
-        .slider-container { margin: 10px 0; }
-        .results { margin-top: 30px; }
-        button { padding: 10px 20px; font-size: 16px; background: #007cba; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background: #005a87; }
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { 
+            color: #2c3e50; 
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .preference-section { 
+            margin: 25px 0; 
+            padding: 20px; 
+            border: 1px solid #ddd; 
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .slider-container { 
+            margin: 15px 0; 
+        }
+        .slider-value {
+            display: block;
+            margin-top: 5px;
+            font-weight: bold;
+            color: #2980b9;
+        }
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .results { 
+            margin-top: 30px; 
+        }
+        button { 
+            padding: 12px 30px; 
+            font-size: 18px; 
+            background: #27ae60; 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer;
+            display: block;
+            margin: 20px auto;
+            transition: background 0.3s;
+        }
+        button:hover { 
+            background: #219a52; 
+        }
+        .result-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: #e8f5e8;
+            border-radius: 6px;
+            border-left: 4px solid #27ae60;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
-    <h1>RIMAC Gym Timing Recommendation</h1>
-    
-    <div class="preference-section">
-        <h3>Crowd Preferences</h3>
-        <div class="slider-container">
-            <label>Crowd Tolerance (0 = empty, 1 = packed): 
-                <input type="range" id="crowdTolerance" min="0" max="1" step="0.1" value="0.3">
-            </label>
-            <span id="crowdValue">30%</span>
+    <div class="container">
+        <h1>🏋️ RIMAC Gym Timing Optimizer</h1>
+        
+        <div class="preference-section">
+            <h3>🚶 Crowd Preference</h3>
+            <p>How crowded do you prefer the gym?</p>
+            <div class="slider-container">
+                <input type="range" id="crowdTolerance" min="0" max="100" value="30">
+                <span class="slider-value" id="crowdValue">30% (Moderately Empty)</span>
+            </div>
         </div>
-    </div>
 
-    <div class="preference-section">
-        <h3>Equipment Priority</h3>
-        <label><input type="checkbox" name="equipment" value="weight_room" checked> Weight Room</label><br>
-        <label><input type="checkbox" name="equipment" value="cardio" checked> Cardio</label><br>
-        <label><input type="checkbox" name="equipment" value="basketball"> Basketball</label><br>
-        <label><input type="checkbox" name="equipment" value="squash"> Squash</label>
-    </div>
-
-    <div class="preference-section">
-        <h3>Demographic Preferences</h3>
-        <div class="slider-container">
-            <label>Preferred Female Ratio: 
-                <input type="range" id="femaleRatio" min="0" max="1" step="0.1" value="0.4">
-            </label>
-            <span id="femaleValue">40%</span>
+        <div class="preference-section">
+            <h3>👥 Gender Preference</h3>
+            <p>Which gender ratio do you prefer?</p>
+            <div class="checkbox-group">
+                <label><input type="radio" name="gender" value="male" checked> Mostly Male</label>
+                <label><input type="radio" name="gender" value="female"> Mostly Female</label>
+                <label><input type="radio" name="gender" value="both"> No Preference</label>
+            </div>
         </div>
+
+        <div class="preference-section">
+            <h3>🌍 Ethnicity Preference</h3>
+            <p>Which ethnicity ratio do you prefer?</p>
+            <div class="checkbox-group">
+                <label><input type="radio" name="ethnicity" value="asian" checked> Mostly Asian</label>
+                <label><input type="radio" name="ethnicity" value="caucasian"> Mostly Caucasian</label>
+                <label><input type="radio" name="ethnicity" value="other"> Mostly Other</label>
+                <label><input type="radio" name="ethnicity" value="none"> No Preference</label>
+            </div>
+        </div>
+
+        <div class="preference-section">
+            <h3>💪 Equipment Priority</h3>
+            <p>What equipment will you use?</p>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="equipment" value="weight_room" checked> Weight Room</label>
+                <label><input type="checkbox" name="equipment" value="cardio" checked> Cardio Machines</label>
+                <label><input type="checkbox" name="equipment" value="basketball"> Basketball Court</label>
+                <label><input type="checkbox" name="equipment" value="squash"> Squash Courts</label>
+            </div>
+        </div>
+
+        <button onclick="calculateRecommendations()">Find Best Gym Times 🏃‍♂️</button>
+
+        <div id="results" class="results"></div>
     </div>
 
-    <div class="preference-section">
-        <h3>Preferred Times</h3>
-        <label><input type="checkbox" name="time" value="6"> 6 AM</label>
-        <label><input type="checkbox" name="time" value="9" checked> 9 AM</label>
-        <label><input type="checkbox" name="time" value="12"> 12 PM</label>
-        <label><input type="checkbox" name="time" value="15" checked> 3 PM</label>
-        <label><input type="checkbox" name="time" value="18"> 6 PM</label>
-        <label><input type="checkbox" name="time" value="21"> 9 PM</label>
-    </div>
-
-    <button onclick="calculateRecommendations()">Get Gym Recommendations</button>
-
-    <div id="results" class="results"></div>
-
-    <!-- ONLY ONE FILE NEEDED NOW -->
     <script src="gym_optimizer.js"></script>
+    
+    <script>
+        // Update slider with meaningful text
+        document.getElementById('crowdTolerance').addEventListener('input', function() {
+            const value = parseInt(this.value);
+            let text = '';
+            if (value <= 20) text = 'Very Empty';
+            else if (value <= 40) text = 'Moderately Empty';
+            else if (value <= 60) text = 'Moderately Crowded';
+            else if (value <= 80) text = 'Very Crowded';
+            else text = 'Extremely Crowded';
+            
+            document.getElementById('crowdValue').textContent = `${value}% (${text})`;
+        });
+
+        // Initialize display
+        document.getElementById('crowdTolerance').dispatchEvent(new Event('input'));
+    </script>
 </body>
 </html>
