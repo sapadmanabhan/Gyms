@@ -1,9 +1,8 @@
 // JavaScript implementation of the recommendation system
 class GymOptimizer {
     constructor() {
-        this.crowdPatterns = {
-            'Monday': {'06:00': 0.2, '09:00': 0.4, '12:00': 0.9, '15:00': 0.6, '18:00': 0.95, '21:00': 0.7},
-            // ... other days
+        this.crowdPatterns = data.crowdPatterns;
+        this.demographics=data.crowdPatterns
         };
     }
 
