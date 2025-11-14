@@ -149,6 +149,26 @@
 
         // Initialize display
         document.getElementById('crowdTolerance').dispatchEvent(new Event('input'));
+
+        <script>
+// Debug script
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("Page loaded successfully!");
+    
+    // Test if button exists
+    const button = document.querySelector('button');
+    console.log("Button found:", button);
+    
+    // Test if function exists
+    console.log("calculateRecommendations function:", typeof calculateRecommendations);
+    
+    // Add click listener manually as backup
+    button.addEventListener('click', function() {
+        console.log("Button clicked via event listener!");
+        calculateRecommendations();
+    });
+});
+</script>
     </script>
 </body>
 </html>
