@@ -1,7 +1,6 @@
-// gym_optimizer.js - Complete RIMAC Gym Optimizer
+// gym_optimizer.js - DEBUGGED VERSION
 class GymOptimizer {
     constructor() {
-        // All data built in - no external files needed
         this.crowdPatterns = {
             'Monday': {'06:00': 0.1, '07:00': 0.2, '08:00': 0.3, '09:00': 0.4, '10:00': 0.5, '11:00': 0.6, '12:00': 0.9, '13:00': 0.8, '14:00': 0.7, '15:00': 0.6, '16:00': 0.7, '17:00': 0.8, '18:00': 0.95, '19:00': 0.9, '20:00': 0.7, '21:00': 0.5, '22:00': 0.3},
             'Tuesday': {'06:00': 0.2, '07:00': 0.3, '08:00': 0.4, '09:00': 0.5, '10:00': 0.6, '11:00': 0.7, '12:00': 0.8, '13:00': 0.7, '14:00': 0.6, '15:00': 0.7, '16:00': 0.8, '17:00': 0.9, '18:00': 0.95, '19:00': 0.85, '20:00': 0.6, '21:00': 0.4, '22:00': 0.2},
@@ -44,7 +43,7 @@ class GymOptimizer {
         const crowdPreference = (userPrefs.crowd_tolerance || 30) / 100;
         const crowdDifference = Math.abs(crowdLevel - crowdPreference);
         const crowdScore = (1 - crowdDifference) * 50;
-        score *= (crowdScore / 50);
+        score = score * (crowdScore / 50);
         
         // Gender preference (20% weight)
         const genderPref = userPrefs.gender_preference || 'both';
@@ -57,21 +56,23 @@ class GymOptimizer {
             genderScore = maleRatio * 20;
         } else if (genderPref === 'female') {
             genderScore = femaleRatio * 20;
+        } else {
+            genderScore = Math.max(maleRatio, femaleRatio) * 20;
         }
-        score *= (genderScore / 20);
+        score = score * (genderScore / 20);
         
         // Ethnicity preference (20% weight)
         const ethnicityPref = userPrefs.ethnicity_preference || 'none';
         if (ethnicityPref !== 'none') {
             const ethnicityRatio = this.demographics[timeCategory][ethnicityPref];
             const ethnicityScore = ethnicityRatio * 20;
-            score *= (ethnicityScore / 20);
+            score = score * (ethnicityScore / 20);
         }
         
         // Equipment bonus (10% weight)
         const equipmentPrefs = userPrefs.equipment_priority || [];
         if (equipmentPrefs.length > 0) {
-            score += 10;
+            score = score * 1.1; // 10% bonus
         }
         
         return Math.round(Math.max(0, Math.min(100, score)));
@@ -106,36 +107,46 @@ class GymOptimizer {
             }
         });
         
-        return recommendations.sort((a, b) => b.score - a.score).slice(0, 10);
+        // Filter out zero scores and return top 10
+        const validRecommendations = recommendations.filter(rec => rec.score > 0);
+        return validRecommendations.sort((a, b) => b.score - a.score).slice(0, 10);
     }
 }
 
+// MAIN FUNCTION - FIXED
 function calculateRecommendations() {
-    console.log("Button clicked!"); // Debug line
+    console.log("Button clicked - function running!");
     
-    // Get user preferences from the form
-    const userPrefs = {
-        crowd_tolerance: parseInt(document.getElementById('crowdTolerance').value),
-        gender_preference: document.querySelector('input[name="gender"]:checked').value,
-        ethnicity_preference: document.querySelector('input[name="ethnicity"]:checked').value,
-        equipment_priority: Array.from(document.querySelectorAll('input[name="equipment"]:checked'))
-                               .map(cb => cb.value)
-    };
+    try {
+        // Get user preferences from the form
+        const userPrefs = {
+            crowd_tolerance: parseInt(document.getElementById('crowdTolerance').value),
+            gender_preference: document.querySelector('input[name="gender"]:checked').value,
+            ethnicity_preference: document.querySelector('input[name="ethnicity"]:checked').value,
+            equipment_priority: Array.from(document.querySelectorAll('input[name="equipment"]:checked'))
+                                   .map(cb => cb.value)
+        };
 
-    console.log("User prefs:", userPrefs); // Debug line
+        console.log("User preferences:", userPrefs);
 
-    const optimizer = new GymOptimizer();
-    const results = optimizer.generateRecommendations(userPrefs);
-    
-    console.log("Results:", results); // Debug line
-    displayResults(results);
+        const optimizer = new GymOptimizer();
+        const results = optimizer.generateRecommendations(userPrefs);
+        
+        console.log("Generated results:", results);
+        displayResults(results);
+        
+    } catch (error) {
+        console.error("Error in calculateRecommendations:", error);
+        document.getElementById('results').innerHTML = 
+            '<div class="result-item" style="color: red;">Error: ' + error.message + '</div>';
+    }
 }
 
 function displayResults(recommendations) {
     const resultsDiv = document.getElementById('results');
     
-    if (recommendations.length === 0) {
-        resultsDiv.innerHTML = '<div class="result-item">No recommendations found. Please adjust your preferences.</div>';
+    if (!recommendations || recommendations.length === 0) {
+        resultsDiv.innerHTML = '<div class="result-item">No recommendations found. Try adjusting your preferences.</div>';
         return;
     }
     
@@ -159,5 +170,6 @@ function displayResults(recommendations) {
     resultsDiv.innerHTML = html;
 }
 
-// Make function globally available
+// Make sure function is available globally
 window.calculateRecommendations = calculateRecommendations;
+console.log("Gym optimizer loaded successfully!");
