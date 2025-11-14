@@ -1,11 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RIMAC Gym Timing Optimizer</title>
     <style>
-        .preference-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; }
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .preference-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
         .slider-container { margin: 10px 0; }
         .results { margin-top: 30px; }
+        button { padding: 10px 20px; font-size: 16px; background: #007cba; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #005a87; }
     </style>
 </head>
 <body>
@@ -13,30 +18,47 @@
     
     <div class="preference-section">
         <h3>Crowd Preferences</h3>
-        <label>Crowd Tolerance: <input type="range" id="crowdTolerance" min="0" max="1" step="0.1" value="0.3"></label>
-        <span id="crowdValue">30%</span>
+        <div class="slider-container">
+            <label>Crowd Tolerance (0 = empty, 1 = packed): 
+                <input type="range" id="crowdTolerance" min="0" max="1" step="0.1" value="0.3">
+            </label>
+            <span id="crowdValue">30%</span>
+        </div>
     </div>
 
     <div class="preference-section">
         <h3>Equipment Priority</h3>
-        <label><input type="checkbox" name="equipment" value="weight_room"> Weight Room</label>
-        <label><input type="checkbox" name="equipment" value="cardio"> Cardio</label>
-        <label><input type="checkbox" name="equipment" value="basketball"> Basketball</label>
+        <label><input type="checkbox" name="equipment" value="weight_room" checked> Weight Room</label><br>
+        <label><input type="checkbox" name="equipment" value="cardio" checked> Cardio</label><br>
+        <label><input type="checkbox" name="equipment" value="basketball"> Basketball</label><br>
+        <label><input type="checkbox" name="equipment" value="squash"> Squash</label>
     </div>
 
     <div class="preference-section">
         <h3>Demographic Preferences</h3>
         <div class="slider-container">
-            <label>Female Ratio: <input type="range" id="femaleRatio" min="0" max="1" step="0.1" value="0.4"></label>
+            <label>Preferred Female Ratio: 
+                <input type="range" id="femaleRatio" min="0" max="1" step="0.1" value="0.4">
+            </label>
             <span id="femaleValue">40%</span>
         </div>
-        <!-- Add more demographic sliders -->
     </div>
 
-    <button onclick="calculateRecommendations()">Get Recommendations</button>
+    <div class="preference-section">
+        <h3>Preferred Times</h3>
+        <label><input type="checkbox" name="time" value="6"> 6 AM</label>
+        <label><input type="checkbox" name="time" value="9" checked> 9 AM</label>
+        <label><input type="checkbox" name="time" value="12"> 12 PM</label>
+        <label><input type="checkbox" name="time" value="15" checked> 3 PM</label>
+        <label><input type="checkbox" name="time" value="18"> 6 PM</label>
+        <label><input type="checkbox" name="time" value="21"> 9 PM</label>
+    </div>
+
+    <button onclick="calculateRecommendations()">Get Gym Recommendations</button>
 
     <div id="results" class="results"></div>
 
+    <!-- ONLY ONE FILE NEEDED NOW -->
     <script src="gym_optimizer.js"></script>
 </body>
 </html>
